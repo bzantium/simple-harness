@@ -1,0 +1,36 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_ROOT/hooks/classify.sh\"",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_ROOT/hooks/save-notepad.sh\" \"$CLAUDE_PROJECT_ROOT\"",
+            "timeout": 10000
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Before this session ends, analyze it for harness-level gotchas. Ignore normal coding bugs -- focus on process issues.\n\nLook for:\n1. USER CORRECTIONS of agent behavior (e.g., 'don't modify files', 'use sonnet for this')\n2. REPEATED instructions (same correction given 2+ times)\n3. Pipeline failures (planner spec was wrong, evaluator criteria mismatched)\n4. Classification errors (simple request treated as complex, or vice versa)\n5. Missing context after compaction (notepad didn't capture something important)\n\nClassify each as HIGH (clear harness deficiency) or MEDIUM (likely issue).\n\nIf HIGH or MEDIUM gotchas found, append to .simple/gotchas.md using this format:\n\n## {today's date}\n- [{HIGH|MEDIUM}] {category}: {description} -> {suggested fix}\n\nIf no gotchas found, do NOT write anything. Do NOT create the file just to say 'no gotchas'."
+          }
+        ]
+      }
+    ]
+  }
+}

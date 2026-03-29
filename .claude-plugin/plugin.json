@@ -1,0 +1,26 @@
+{
+  "name": "simple-harness",
+  "version": "1.0.0",
+  "description": "Minimal harness for long-running development: 3-agent pipeline (Planner → Generator → Evaluator) with automatic complexity detection, compaction resilience, and failure learning.",
+  "author": {
+    "name": "bzantium",
+    "url": "https://github.com/bzantium"
+  },
+  "license": "MIT",
+  "hooks": "./hooks/hooks.json",
+  "skills": ["./skills/"],
+  "agents": [
+    "./agents/planner.md",
+    "./agents/generator.md",
+    "./agents/evaluator.md"
+  ],
+  "keywords": [
+    "harness",
+    "pipeline",
+    "planner",
+    "generator",
+    "evaluator",
+    "development",
+    "automation"
+  ]
+}
