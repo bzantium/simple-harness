@@ -16,13 +16,13 @@ fi
 PROMPT_LOWER=$(echo "$PROMPT" | tr '[:upper:]' '[:lower:]')
 PROMPT_LEN=${#PROMPT}
 
-# --- Rule 1: Explicit pipeline invocation ---
-if echo "$PROMPT_LOWER" | grep -qE '(/pipeline|\.simple/spec\.md)'; then
+# --- Rule 1: Explicit harness-run invocation ---
+if echo "$PROMPT_LOWER" | grep -qE '((^|[[:space:]])(/simple-harness:run|/run)([[:space:]]|$)|\.simple/spec\.md)'; then
   cat <<'INJECT'
 {
   "hookSpecificOutput": {
     "hookEventName": "UserPromptSubmit",
-    "additionalContext": "<system-reminder>\nThis request requires the full development pipeline (Planner + Generator + Evaluator). You MUST invoke the Skill tool with skill: \"simple-harness:pipeline\" with args: \"full\" before taking any action. Pass the user's full request after the mode arg.\n</system-reminder>"
+    "additionalContext": "<system-reminder>\nThis request requires the full development pipeline (Planner + Generator + Evaluator). You MUST invoke the Skill tool with skill: \"simple-harness:run\" with args: \"full\" before taking any action. Pass the user's full request after the mode arg.\n</system-reminder>"
   }
 }
 INJECT
@@ -103,7 +103,7 @@ if [ "$HIGH" -eq 1 ]; then
 {
   "hookSpecificOutput": {
     "hookEventName": "UserPromptSubmit",
-    "additionalContext": "<system-reminder>\nThis request requires the full development pipeline (Planner + Generator + Evaluator). You MUST invoke the Skill tool with skill: \"simple-harness:pipeline\" with args: \"full\" before taking any action. Pass the user's full request after the mode arg.\n</system-reminder>"
+    "additionalContext": "<system-reminder>\nThis request requires the full development pipeline (Planner + Generator + Evaluator). You MUST invoke the Skill tool with skill: \"simple-harness:run\" with args: \"full\" before taking any action. Pass the user's full request after the mode arg.\n</system-reminder>"
   }
 }
 INJECT
@@ -113,7 +113,7 @@ elif [ "$MEDIUM" -eq 1 ]; then
 {
   "hookSpecificOutput": {
     "hookEventName": "UserPromptSubmit",
-    "additionalContext": "<system-reminder>\nThis request needs the fast development pipeline (Generator + Evaluator, no Planner). You MUST invoke the Skill tool with skill: \"simple-harness:pipeline\" with args: \"fast\" before taking any action. Pass the user's full request after the mode arg.\n</system-reminder>"
+    "additionalContext": "<system-reminder>\nThis request needs the fast development pipeline (Generator + Evaluator, no Planner). You MUST invoke the Skill tool with skill: \"simple-harness:run\" with args: \"fast\" before taking any action. Pass the user's full request after the mode arg.\n</system-reminder>"
   }
 }
 INJECT

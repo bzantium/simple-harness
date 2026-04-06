@@ -1,9 +1,11 @@
 ---
-name: pipeline
-description: "Run the development pipeline with automatic retry. Two modes: 'full' (Planner + Generator + Evaluator) for complex tasks, 'fast' (Generator + Evaluator, skip Planner) for focused changes. Triggers automatically via UserPromptSubmit hook, or manually via /simple-harness:pipeline. Also triggers when .simple/spec.md exists and user wants to continue work."
+name: run
+description: "Run the development pipeline with automatic retry. Two modes: 'full' (Planner + Generator + Evaluator) for complex tasks, 'fast' (Generator + Evaluator, skip Planner) for focused changes. Triggers automatically via UserPromptSubmit hook, or manually via /simple-harness:run. Also triggers when .simple/spec.md exists and user wants to continue work."
 ---
 
 # Development Pipeline
+
+Reference `references/handoff-protocol.md` as the source of truth for the `.simple/` file contract, lifecycle, and archive naming.
 
 Two modes based on complexity:
 
@@ -19,7 +21,7 @@ When delegating any phase, explicitly invoke the subagent from this plugin by it
 The classify hook injects the mode as the first arg:
 - `args: "full"` → run Phase 1 (Plan) + Phase 2 (Generate) + Phase 3 (Evaluate)
 - `args: "fast"` → skip Phase 1, go directly to Phase 2 (Generate) + Phase 3 (Evaluate)
-- No arg or manual `/pipeline` invocation → default to `full`
+- No arg or manual `/run` invocation → default to `full`
 
 In **fast mode**, the user's original request IS the spec. Write a minimal `.simple/spec.md` with the request as the Goal and derive 2-3 testable success criteria from it before spawning the Generator.
 

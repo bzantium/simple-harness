@@ -4,7 +4,7 @@ Simple Harness is a project-scoped Claude Code plugin and marketplace for runnin
 
 The repository currently provides:
 
-- one skill: `/simple-harness:pipeline`
+- one skill: `/simple-harness:run`
 - three plugin subagents: `simple-harness:plan`, `simple-harness:gen`, `simple-harness:eval`
 - three hooks: `UserPromptSubmit`, `PreCompact`, `Stop`
 - one runtime directory: `.simple/`
@@ -46,19 +46,19 @@ The examples above use project scope, which matches how this plugin is designed 
 The `UserPromptSubmit` hook classifies each prompt and either:
 
 - does nothing for simple requests
-- injects a reminder to run `simple-harness:pipeline fast`
-- injects a reminder to run `simple-harness:pipeline full`
+- injects a reminder to run `simple-harness:run fast`
+- injects a reminder to run `simple-harness:run full`
 
 The classifier is intentionally conservative. A missed trigger is cheaper than a false positive, so pass-through is the default.
 
 ### Manual
 
-Invoke the pipeline skill directly:
+Invoke the skill directly:
 
 ```text
-/simple-harness:pipeline add support for OAuth
-/simple-harness:pipeline fast add support for OAuth
-/simple-harness:pipeline full refactor the auth module
+/simple-harness:run add support for OAuth
+/simple-harness:run fast add support for OAuth
+/simple-harness:run full refactor the auth module
 ```
 
 If you omit the first argument, the skill defaults to `full`.
@@ -67,7 +67,7 @@ If you omit the first argument, the skill defaults to `full`.
 
 The prompt classifier in `hooks/classify.sh` uses simple pattern matching.
 
-It forces the full pipeline when the prompt mentions `/pipeline` or `.simple/spec.md`.
+It forces the full pipeline when the prompt mentions `/simple-harness:run`, a standalone `/run`, or `.simple/spec.md`.
 
 It passes through when the prompt looks like:
 
@@ -120,7 +120,7 @@ It routes to the fast pipeline when it sees focused feature work or explicit qua
 
 ## Subagents
 
-These subagents are registered through `.claude-plugin/plugin.json` and are intended to be invoked by the pipeline skill, not replaced with generic agents.
+These subagents are registered through `.claude-plugin/plugin.json` and are intended to be invoked by the `run` skill, not replaced with generic agents.
 
 | Subagent | Model | Tools | Role |
 |----------|-------|-------|------|
@@ -195,7 +195,7 @@ All runtime state lives in `.simple/`, which is gitignored in this repository.
 .claude-plugin/            marketplace and plugin manifests
 agents/                    plugin subagents: plan, gen, eval
 hooks/                     hook configuration and shell scripts
-skills/pipeline/           pipeline skill and handoff reference
+skills/run/                run skill and handoff reference
 ```
 
 ## License
