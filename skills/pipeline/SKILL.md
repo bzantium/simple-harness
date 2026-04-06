@@ -12,6 +12,8 @@ Two modes based on complexity:
 
 Each agent has a single responsibility. The Planner and Evaluator never modify code. The Generator never judges its own output. Communication happens exclusively through files in `.simple/`.
 
+When delegating any phase, explicitly invoke the subagent from this plugin by its plugin-scoped name. Use `simple-harness:plan`, `simple-harness:gen`, and `simple-harness:eval`. Do NOT use a generic subagent for planner, generator, or evaluator work, because the plugin subagents carry the intended prompt, model, and tool restrictions.
+
 ## Mode Selection
 
 The classify hook injects the mode as the first arg:
@@ -41,14 +43,9 @@ If `.simple/gotchas.md` exists, it will be passed to the Planner as learning con
 
 ## Phase 1: Plan
 
-Spawn the **planner** agent:
+Invoke `simple-harness:plan` explicitly. Give it a task equivalent to:
 
 ```
-Agent(
-  subagent_type: "general-purpose",
-  name: "planner",
-  prompt: "You are the Planner agent. Read agents/planner.md for your full instructions.
-
 USER REQUEST:
 {user's original request}
 
@@ -56,9 +53,7 @@ GOTCHAS (learn from past sessions):
 {contents of .simple/gotchas.md, or 'None'}
 
 Create .simple/spec.md following your output format.
-Explore the codebase thoroughly before writing the spec.",
-  model: "opus"
-)
+Explore the codebase thoroughly before writing the spec.
 ```
 
 After the planner returns:
@@ -72,20 +67,13 @@ After the planner returns:
 
 Before spawning the generator, ensure git state is clean enough for checkpointing. The generator will create a checkpoint internally.
 
-Spawn the **generator** agent:
+Invoke `simple-harness:gen` explicitly. Give it a task equivalent to:
 
 ```
-Agent(
-  subagent_type: "general-purpose",
-  name: "generator",
-  prompt: "You are the Generator agent. Read agents/generator.md for your full instructions.
-
-Read .simple/spec.md and implement the changes described.
+Read `.simple/spec.md` and implement the changes described.
 IMPORTANT: Create a git checkpoint BEFORE making any changes (see your Process step 1).
-Write your summary to .simple/changes.md.
-Follow the spec exactly. If you cannot, document why in Notes.",
-  model: "sonnet"
-)
+Write your summary to `.simple/changes.md`.
+Follow the spec exactly. If you cannot, document why in Notes.
 ```
 
 After the generator returns:
@@ -95,19 +83,12 @@ After the generator returns:
 
 ## Phase 3: Evaluate
 
-Spawn the **evaluator** agent:
+Invoke `simple-harness:eval` explicitly. Give it a task equivalent to:
 
 ```
-Agent(
-  subagent_type: "general-purpose",
-  name: "evaluator",
-  prompt: "You are the Evaluator agent. Read agents/evaluator.md for your full instructions.
-
-Read .simple/spec.md for criteria and .simple/changes.md for what was done.
+Read `.simple/spec.md` for criteria and `.simple/changes.md` for what was done.
 Verify each criterion. Run tests if applicable.
-Write your evaluation to .simple/evaluation.md.",
-  model: "sonnet"
-)
+Write your evaluation to `.simple/evaluation.md`.
 ```
 
 After the evaluator returns:
@@ -127,12 +108,9 @@ The generator will rollback to its checkpoint before re-implementing. This ensur
 Re-spawn the generator with evaluator feedback:
 
 ```
-Agent(
-  subagent_type: "general-purpose",
-  name: "generator",
-  prompt: "You are the Generator agent. The Evaluator found issues.
+Invoke `simple-harness:gen` explicitly with:
 
-IMPORTANT: Rollback to your checkpoint FIRST (see 'When Re-invoked with Evaluator Feedback' in your instructions), then re-implement from scratch with the feedback in mind.
+IMPORTANT: Rollback to your checkpoint FIRST (see "When Re-invoked with Evaluator Feedback" in your instructions), then re-implement from scratch with the feedback in mind.
 
 EVALUATION FEEDBACK:
 {contents of .simple/evaluation.md -- especially the 'Feedback for Generator' section}
@@ -140,9 +118,7 @@ EVALUATION FEEDBACK:
 ORIGINAL SPEC:
 {contents of .simple/spec.md}
 
-Fix the identified issues. Update .simple/changes.md with what you fixed.",
-  model: "sonnet"
-)
+Fix the identified issues. Update `.simple/changes.md` with what you fixed.
 ```
 
 Then re-spawn the evaluator (same prompt as Phase 3).

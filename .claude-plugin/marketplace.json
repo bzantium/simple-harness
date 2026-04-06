@@ -4,6 +4,9 @@
     "name": "bzantium",
     "url": "https://github.com/bzantium"
   },
+  "metadata": {
+    "description": "Marketplace for the Simple Harness Claude Code plugin and its pipeline workflow."
+  },
   "plugins": [
     {
       "name": "simple-harness",
