@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_ROOT/hooks/classify.sh\"",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/classify.sh\"",
             "timeout": 5000
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_ROOT/hooks/save-notepad.sh\" \"$CLAUDE_PROJECT_ROOT\"",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/save-notepad.sh\" \"$CLAUDE_PROJECT_DIR\"",
             "timeout": 10000
           }
         ]
@@ -26,8 +26,9 @@
       {
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Before this session ends, analyze it for harness-level gotchas. Ignore normal coding bugs -- focus on process issues.\n\nLook for:\n1. USER CORRECTIONS of agent behavior (e.g., 'don't modify files', 'use sonnet for this')\n2. REPEATED instructions (same correction given 2+ times)\n3. Pipeline failures (planner spec was wrong, evaluator criteria mismatched)\n4. Classification errors (simple request treated as complex, or vice versa)\n5. Missing context after compaction (notepad didn't capture something important)\n\nClassify each as HIGH (clear harness deficiency) or MEDIUM (likely issue).\n\nIf HIGH or MEDIUM gotchas found, append to .simple/gotchas.md using this format:\n\n## {today's date}\n- [{HIGH|MEDIUM}] {category}: {description} -> {suggested fix}\n\nIf no gotchas found, do NOT write anything. Do NOT create the file just to say 'no gotchas'."
+            "type": "agent",
+            "prompt": "Evaluate whether Claude should stop. Start with the Stop hook JSON in $ARGUMENTS, then read the transcript at transcript_path and inspect .simple/ files if they exist.\n\nDetect harness-level gotchas only. Ignore ordinary coding bugs or incomplete implementation unless they reveal a harness/process problem.\n\nLook for:\n1. User corrections of agent behavior\n2. Repeated instructions from the user\n3. Pipeline failures (planner/generator/evaluator contract problems)\n4. Classification errors (simple request routed incorrectly)\n5. Compaction gaps or missing persisted context\n\nUse only these categories: user-correction, repeated-instruction, pipeline-failure, classification-error, compaction-gap.\nClassify findings as HIGH or MEDIUM.\nIf an existing entry in .simple/gotchas.md already captures the same issue with no materially new detail, treat it as already recorded.\n\nIf there are no new HIGH or MEDIUM gotchas, return exactly:\n{\"ok\": true}\n\nIf stop_hook_active is true, return exactly:\n{\"ok\": true}\nThis prevents infinite Stop-hook loops after Claude has already been told to record the gotcha.\n\nIf new gotchas exist and stop_hook_active is false, return JSON only in this shape:\n{\"ok\": false, \"reason\": \"Before stopping, append the following entries to .simple/gotchas.md under a ## YYYY-MM-DD header (create .simple/ and the file if needed, avoid duplicates, and do no other work):\\n- [HIGH] category: description -> suggested fix\\n- [MEDIUM] category: description -> suggested fix\"}\n\nReturn at most 3 bullets. The reason must contain the exact markdown bullets Claude should append. Do not ask Claude to do anything except record the gotcha entries and stop.",
+            "timeout": 90
           }
         ]
       }

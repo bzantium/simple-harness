@@ -84,7 +84,9 @@ The default is pass-through. A missed trigger is cheaper than a false one -- you
 |-------|------|---------|
 | `UserPromptSubmit` | command | 3-tier complexity classification (pattern matching, <100ms) |
 | `PreCompact` | command | Saves pipeline state to `.simple/notepad.md` before compaction |
-| `Stop` | prompt | Captures harness-level gotchas for cross-session learning |
+| `Stop` | agent | Reviews the transcript for harness-level gotchas and blocks once to have Claude append `.simple/gotchas.md` |
+
+The `Stop` hook is an agent hook rather than a prompt hook so it can inspect the transcript and `.simple/` state. If it finds a new harness-level issue, it blocks stopping once, tells Claude exactly what to append to `.simple/gotchas.md`, then allows the next stop to avoid loops.
 
 ### `.simple/` Directory
 

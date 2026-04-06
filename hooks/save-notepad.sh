@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# $1 is the project root, passed by hooks.json via $CLAUDE_PROJECT_ROOT
+# $1 is the project root, passed by hooks.json via $CLAUDE_PROJECT_DIR
 PROJECT_ROOT="${1:-$PWD}"
 SIMPLE_DIR="$PROJECT_ROOT/.simple"
 NOTEPAD="$SIMPLE_DIR/notepad.md"
