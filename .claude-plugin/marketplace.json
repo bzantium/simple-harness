@@ -10,10 +10,7 @@
   "plugins": [
     {
       "name": "simple-harness",
-      "source": {
-        "source": "url",
-        "url": "https://github.com/bzantium/simple-harness.git"
-      },
+      "source": "./",
       "description": "Minimal harness for long-running development — 3-agent pipeline (Planner → Generator → Evaluator) with hook-based auto-activation, compaction resilience, and failure learning.",
       "version": "1.0.0",
       "license": "MIT",

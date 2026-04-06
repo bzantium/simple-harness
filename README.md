@@ -20,7 +20,7 @@ The marketplace name is `simple-harness`, and the plugin name is also `simple-ha
 From a local checkout, run from the repository root:
 
 ```bash
-claude plugin marketplace add . --scope project
+claude plugin marketplace add ./ --scope project
 claude plugin install simple-harness@simple-harness --scope project
 ```
 
